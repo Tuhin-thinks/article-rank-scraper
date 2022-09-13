@@ -1,0 +1,8 @@
+downloads/**
+uploads/**
+
+**.idea
+**__pycache__**
+**.backup
+**.mypy_cache
+flask_env
