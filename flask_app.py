@@ -3,7 +3,7 @@ import os.path
 from datetime import datetime
 
 import flask
-from celery import Celery
+# from celery import Celery
 from flask import flash, redirect, request, url_for, send_file
 from flask_wtf import Form
 from wtforms import FileField, SubmitField
@@ -19,15 +19,15 @@ flask_app = flask.Flask(__name__)
 flask_app.config['SECRET_KEY'] = "knehruiwbefjkklqwhieh12123"
 
 # Configure the redis server
-flask_app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-flask_app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+# flask_app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+# flask_app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 # flask_app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL']
 # flask_app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL']
 flask_app.config['UPLOAD_FOLDER'] = "uploads"
 
 # creates a Celery object
-celery = Celery(flask_app.name, broker=flask_app.config['CELERY_BROKER_URL'])
-celery.conf.update(flask_app.config)
+# celery = Celery(flask_app.name, broker=flask_app.config['CELERY_BROKER_URL'])
+# celery.conf.update(flask_app.config)
 
 
 class FileUploadForm(Form):
@@ -61,8 +61,9 @@ def upload():
                       "titles to be searched.")
                 return redirect(url_for("home"))
             # run the background logic on this
-            async_result = process_file.delay(__file)
-            path = async_result.get()
+            # async_result = process_file.delay(__file)
+            # path = async_result.get()
+            path = process_file(__file)
             return send_file(path, as_attachment=True)
         else:
             flash("Unsupported extension, please upload file with extension: "
@@ -70,7 +71,7 @@ def upload():
     return redirect(url_for("home"))
 
 
-@celery.task
+# @celery.task
 def process_file(file_name):
     """
     Celery task function to run process in background
