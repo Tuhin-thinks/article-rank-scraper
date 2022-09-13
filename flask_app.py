@@ -6,7 +6,6 @@ import flask
 from celery import Celery
 from flask import flash, redirect, request, url_for, send_file
 from flask_wtf import Form
-from werkzeug.utils import secure_filename
 from wtforms import FileField, SubmitField
 from wtforms.validators import DataRequired
 
