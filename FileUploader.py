@@ -63,7 +63,7 @@ def upload():
     return redirect(url_for("home"))
 
 
-@celery.task()
+@celery.task
 def process_file(file_name):
     """
     Celery task function to run process in background
