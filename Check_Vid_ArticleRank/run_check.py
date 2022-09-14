@@ -35,6 +35,12 @@ def query(title: str):
         custom_filter_condition=url_filter_condition,
         dorking_add={"tbm": "vid"},
         art_video_search=False)
+
+    # vid_views_count = None
+    # if vid_views_count1:
+    #     vid_views_count = vid_views_count1
+    # elif vid_views_count2:
+    #     vid_views_count = vid_views_count2
     return (article_rank, article_title, article_link, art_video_rank,
             art_video_title, art_video_link, vid_rank, vid_title, vid_link)
 
@@ -65,9 +71,9 @@ def driver(file_name=None):
             search_query = row['Title']
             print(f'{"--" * 16}\n'
                   f'Searching: {search_query}')
-            article_rank, article_title, article_link, art_video_rank, \
-            art_video_title, art_video_link, vid_rank, vid_title, vid_link = query(
-                search_query)
+            (article_rank, article_title, article_link, art_video_rank,
+             art_video_title, art_video_link, vid_rank,
+             vid_title, vid_link) = query(search_query)
             if article_rank != -1:
                 print('FOUND', article_rank)
             else:
@@ -98,7 +104,8 @@ def driver(file_name=None):
     end_time = time.perf_counter()
     time_diff = end_time - start_time
     print(f"Time taken: {time_diff:.03f}sec. ({time_diff / 60:.02f}mins.)")
-    time_hash = hashlib.md5(datetime.now().isoformat().encode("utf-8")).hexdigest()
+    time_hash = hashlib.md5(
+        datetime.now().isoformat().encode("utf-8")).hexdigest()
     op_file = os.path.join("downloads", f"Results_{time_hash}.csv")
     links_df.to_csv(op_file)
     try:
