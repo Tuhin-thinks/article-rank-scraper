@@ -1,7 +1,12 @@
+import re
+import traceback
+from functools import lru_cache
+
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlencode, urlparse
 from .tools import Url
+
 # from . import chrome
 
 google = None
@@ -65,12 +70,40 @@ def get_art_vid_links(soup: BeautifulSoup):
     return titles, links
 
 
+# todo: Currently not working because, video section is dynamically
+#   loaded in browser using JavaScript (have to use selenium for extraction)
+@lru_cache(maxsize=None)
+def get_video_views_count(video_page_url: str):
+    """
+
+    Parameters
+    ----------
+    video_page_url: gfg /videos/ page url
+
+    Returns
+    -------
+    views count element string
+    """
+    views_count_selector = "ul.gfg-pb-1>li:nth-child(1)"
+    try:
+        response = requests.get(video_page_url)
+        soup = BeautifulSoup(response.content, "html.parser")
+        views_element = soup.select(views_count_selector)
+        if views_element:
+            return re.search(r"\d+", views_element[0].text).group()
+    except Exception as e:
+        print(f"Error occurred while scraping views for video. {e.__str__()}")
+        traceback.print_exc()
+    return None
+
+
 def do_search(search_query, match_url=False, target_url=None,
               custom_url_filter=False, custom_filter_condition=None,
               display=False, dorking_add=None, art_video_search=True):
     global google
     artRank, artTitle, artLink = -1, "", None
     artVidRank, artVidTitle, artVidLink = -1, "", None
+    # vidViewsCount = None
     url_pre = "https://www.google.com/search?"
 
     # search_query = input("Search query: ")
@@ -138,6 +171,12 @@ def do_search(search_query, match_url=False, target_url=None,
                     print(f"\n{16 * '--'}\n")
                 artVidRank, artVidTitle, artVidLink = art_vid_rank, art_vid_title, art_vid_link
                 break
+    # if artLink:
+    #     vidViewsCount = get_video_views_count(artLink)
+    # elif artVidLink:
+    #     vidViewsCount = get_video_views_count(artLink)
+
+    # return artRank, artTitle, artLink, artVidRank, artVidTitle, artVidLink, vidViewsCount
     return artRank, artTitle, artLink, artVidRank, artVidTitle, artVidLink
 
 
